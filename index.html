@@ -19,8 +19,8 @@ input,select,textarea{width:100%;font:inherit;padding:9px;border:1px solid var(-
 input,select,textarea{min-width:0;max-width:100%}
 .chk{display:flex;gap:8px;align-items:center;margin-top:10px}.chk input{width:22px;height:22px}
 #form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px}#form>div{min-width:0}#form>.chk{align-self:end;margin:0 0 9px}
-#form2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:0 8px;align-items:end}#form2>.chk:nth-child(2){justify-self:center}#form2>.chk:nth-child(3){justify-self:end}
-
+#form2{grid-column:1/-1;margin-top:6px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:0 8px;align-items:end}#form2>.chk:nth-child(2){justify-self:center}#form2>.chk:nth-child(3){justify-self:end}
+.ge{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:6px}.ge>div{min-width:0}
  #form2>.chk{margin:0 0 9px}#form2 .chk{gap:6px}#form2 .chk input{flex:none}#form2 .chk label{font-size:12px!important;line-height:1.2}
 .dl{padding:10px 0;border-top:1px solid var(--bd)}.dl input{min-width:0;max-width:100%;min-height:44px;-webkit-appearance:none;appearance:none;display:block}
 .g2,.fh{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:8px}.g2+.g3{margin-top:6px}.g3{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:end}.g3>div{min-width:0}.g3 input{font-size:15px;padding:9px 6px}.g2>div{min-width:0}.fh{gap:6px}.dl>button{width:100%;margin-top:8px}
@@ -42,7 +42,6 @@ details summary{cursor:pointer;font-weight:600}
 <h1>Pedidos SECSA ⛽<span class="mu" id="st"></span></h1>
 
 <div class="card" id="form"></div>
-<div class="card" id="form2"></div>
 
 <div class="card"><div class="hh"><b>Despachos📑</b><button class="x" id="add">➕ Agregar</button></div><div id="ds"></div></div>
 
@@ -91,7 +90,7 @@ const $=id=>document.getElementById(id);
 
  let f={coord:"",cli:"",est:"",term:"",op:"",ot:"",nota:"",urg:false,petro:"",fact:"",prio:"",guia:"",factor:false};
 let d=[{p:"",q:"",f:"",h:"",c:""}];let sentAt="";let hi=S.hist.length-1;
-const SPEC=[["coord","Coordinador Terminal 👩🏽‍💻","combo","personal"],["term","Terminal de Carga 🏭","combo","terminales"],["cli","Cliente 🏢","combo","clientes"],["est","Establecimiento 📌","dl","estab"],["op","Orden Producto 📋","txt"],["ot","Orden Transporte 📄","txt"],["nota","Emite Nota Pedido 👩🏽‍💻","combo","personal"],["petro","Coordinador PETRO 👨🏽‍💼","combo","personal"],["fact","Facturación 🧾","combo","personal"],["guia","Guía Electrónica 📋","combo","personal"]];
+const SPEC=[["coord","Coordinador Terminal 👩🏽‍💻","combo","personal"],["term","Terminal de Carga 🏭","combo","terminales"],["cli","Cliente 🏢","combo","clientes"],["est","Establecimiento 📌","dl","estab"],["nota","Emite Nota Pedido 👩🏽‍💻","combo","personal"],["petro","Coordinador PETRO 👨🏽‍💼","combo","personal"],["fact","Facturación 🧾","combo","personal"],["guia","Guía Electrónica 📋","combo","personal"]];
 const SPEC2=[["prio","Prioridad Factura ⚠️","sel","prio"],["factor","Factor 🌡️","chk"],["urg","Urgente ‼️","chk"]];
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 function opts(k){const a=k==="prio"?Object.keys(PRIO):S.lists[k];return '<option value=""></option>'+a.map(x=>`<option>${esc(x)}</option>`).join("")}
@@ -105,7 +104,7 @@ function buildForm(){
    return `<div><label>${l}</label><select data-k="${k}" data-combo="1"><option value=""></option><option value="__new__"${inList?"":" selected"}>✏️ Escribir otro…</option>${S.lists[o].map(x=>`<option${inList&&cur&&norm(x)===norm(cur)?" selected":""}>${esc(x)}</option>`).join("")}</select><input data-new="${k}" autocomplete="off" placeholder="Escribe el nombre nuevo" value="${inList?"":esc(cur)}" style="margin-top:6px;${inList?"display:none":""}"></div>`}
   if(t==="dl")return `<div><label>${l}</label><input data-k="${k}" list="dl_${k}" autocomplete="off"><datalist id="dl_${k}">${S.lists[o].map(x=>`<option value="${esc(x)}">`).join("")}</datalist></div>`;
   return `<div><label>${l}</label><input data-k="${k}"></div>`};
- $("form").innerHTML=SPEC.map(fh).join("");
+  $("form").innerHTML=SPEC.map(fh).join("")+'<div id="form2"></div>';
  $("form2").innerHTML=SPEC2.map(fh).join("");
  document.querySelectorAll("#form [data-k],#form2 [data-k]").forEach(e=>{
   const k=e.dataset.k;
@@ -120,7 +119,7 @@ function buildForm(){
  
  function buildDs(){
  $("ds").innerHTML=d.map((r,i)=>{const inL=!r.p||S.lists.productos.some(x=>norm(x)===norm(r.p));
-  return `<div class="dl" data-i="${i}"><div class="g2"><div><label>Producto 🛢️</label><select data-f="p"><option value=""></option><option value="__new__"${inL?"":" selected"}>✏️ Escribir otro…</option>${S.lists.productos.map(x=>`<option${inL&&r.p&&norm(x)===norm(r.p)?" selected":""}>${esc(x)}</option>`).join("")}</select><input data-f="pn" autocomplete="off" placeholder="Escribe el producto nuevo" value="${inL?"":esc(r.p)}" style="margin-top:6px;${inL?"display:none":""}"></div><div><label>Cantidad 🔢</label><input data-f="q" inputmode="numeric" value="${r.q?grp(String(r.q)):''}"></div></div><div class="g3"><div><label>Fecha Despacho 📅</label><input data-f="f" type="date" value="${r.f}"></div><div><label>Hora ⏲️ (opcional)</label><input data-f="h" type="time" value="${r.h}"></div><div><label>Costo Transporte 🚛</label><input data-f="c" inputmode="decimal" autocomplete="off" placeholder="$ 0,00" value="${cshow(r.c)}"></div></div>${d.length>1?`<button class="x" data-del="${i}">✕</button>`:""}</div>`}).join("");
+  return `<div class="dl" data-i="${i}"><div class="g2"><div><label>Producto 🛢️</label><select data-f="p"><option value=""></option><option value="__new__"${inL?"":" selected"}>✏️ Escribir otro…</option>${S.lists.productos.map(x=>`<option${inL&&r.p&&norm(x)===norm(r.p)?" selected":""}>${esc(x)}</option>`).join("")}</select><input data-f="pn" autocomplete="off" placeholder="Escribe el producto nuevo" value="${inL?"":esc(r.p)}" style="margin-top:6px;${inL?"display:none":""}"></div><div><label>Cantidad 🔢</label><input data-f="q" inputmode="numeric" value="${r.q?grp(String(r.q)):''}"></div></div><div class="g3"><div><label>Fecha Despacho 📅</label><input data-f="f" type="date" value="${r.f}"></div><div><label>Hora ⏲️ (opcional)</label><input data-f="h" type="time" value="${r.h}"></div><div><label>Costo Transporte 🚛</label><input data-f="c" inputmode="decimal" autocomplete="off" placeholder="$ 0,00" value="${cshow(r.c)}"></div></div><div class="ge"><div><label>Orden Producto 🛢️</label><input data-f="op" autocomplete="off" value="${esc(r.op||"")}"></div><div><label>Orden Transporte 🚛</label><input data-f="ot" autocomplete="off" value="${esc(r.ot||"")}"></div></div>${d.length>1?`<button class="x" data-del="${i}">✕</button>`:""}</div>`}).join("");
  $("ds").querySelectorAll("[data-f]").forEach(e=>{
   const k=e.dataset.f,row=()=>d[+e.closest("[data-i]").dataset.i];
   if(k==="p"){const ni=e.closest("[data-i]").querySelector('[data-f="pn"]');
@@ -159,11 +158,12 @@ const icon=p=>p?(/INDUSTRIAL/.test(p)?"🛢️":"🛢️"):"🛢️";
  if(f.urg)m+="\n\n‼️ *URGENTE* ‼️";
  m+="\n\n🏢 Cliente :  *"+U(f.cli)+"*"+(f.est?"  📌  *"+U(f.est)+"*":"");
  const R=d.filter(r=>r.q),mu=R.length>1,mp=new Set(R.map(r=>norm(r.p))).size>1,p0=R[0]?R[0].p:"";
-  m+="\n🏭 Terminal : *"+U(f.term)+"*\n\n"+(f.op?"📋 Orden producto : *"+f.op+"*\n":"")+(f.ot?"📄 Orden transporte : *"+f.ot+"*\n\n":"")+(mp?"":icon(p0)+" Producto : *"+p0+"*\n");
+  m+="\n🏭 Terminal : *"+U(f.term)+"*\n\n"+(mu?"":(R[0]&&R[0].op?"📄 Orden producto : *"+R[0].op+"*\n":"")+(R[0]&&R[0].ot?"📄 Orden transporte : *"+R[0].ot+"*\n":""))+(mp?"":icon(p0)+" Producto : *"+p0+"*\n");
  R.forEach(r=>{const sp=mu?" - ":"\n";let t=(mp?icon(r.p)+" Producto : *"+r.p+"*"+sp:"")+"🔢 Cantidad : *"+num(r.q)+"* galones";
   if(r.f)t+=sp+"📅 Despacho : *"+fecha(r.f)+"*";
   if(r.h)t+=sp+"⏲️ Hora Entrega : *"+r.h.replace(":","h")+"* "+clock(r.h);
   if(r.c)t+=sp+"🚛 Transporte : $ *"+money(r.c)+"*";
+   if(mu){if(r.op)t+=" - 📄 Orden producto : *"+r.op+"*";if(r.ot)t+=" - 📄 Orden transporte : *"+r.ot+"*"} 
   m+=t+(mu?"\n":"")});
  if(!mu)m+="\n";
  
@@ -198,7 +198,7 @@ $("cy").onclick=()=>{
  touched.forEach(lk=>S.lists[lk].sort((a,b)=>a.localeCompare(b,"es")));
  const m=msg();sentAt=stamp();
  S.hist.push("📨 Mensaje enviado via Whatsapp el...: "+sentAt+"\n\n"+clean(m));hi=S.hist.length-1;
- S.log.push({fecha:sentAt,coordinador:f.coord,cliente:f.cli,establecimiento:f.est,producto:[...new Set(d.filter(r=>r.q).map(r=>r.p))].join(", "),terminal:f.term,orden_producto:f.op,orden_transporte:f.ot,nota_pedido:f.nota,urgente:f.urg?"SI":"NO",petroecuador:f.petro,facturacion:f.fact,prioridad_factura:f.prio,guia_electronica:f.guia,factor:f.factor?"SI":"NO",despachos:d.filter(r=>r.q).map(r=>[r.p,num(r.q)+" gal",r.f,r.h,r.c].filter(Boolean).join(" | ")).join(" ; ")});save();
+ S.log.push({fecha:sentAt,coordinador:f.coord,cliente:f.cli,establecimiento:f.est,producto:[...new Set(d.filter(r=>r.q).map(r=>r.p))].join(", "),terminal:f.term,orden_producto:[...new Set(d.filter(r=>r.q&&r.op).map(r=>r.op))].join(", "),orden_transporte:[...new Set(d.filter(r=>r.q&&r.ot).map(r=>r.ot))].join(", "),nota_pedido:f.nota,urgente:f.urg?"SI":"NO",petroecuador:f.petro,facturacion:f.fact,prioridad_factura:f.prio,guia_electronica:f.guia,factor:f.factor?"SI":"NO",despachos:d.filter(r=>r.q).map(r=>[r.p,num(r.q)+" gal",r.f,r.h,r.c].filter(Boolean).join(" | ")).join(" ; ")});save();
  const url="https://api.whatsapp.com/send?phone="+S.phone.replace(/\D/g,"")+"&text="+encodeURIComponent(m)+"&app_absent=1&send=1";
  const a=$("wl");a.href=url;a.style.display="block";
  copyTxt(m);
