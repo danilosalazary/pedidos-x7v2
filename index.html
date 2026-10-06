@@ -19,9 +19,9 @@ input,select,textarea{width:100%;font:inherit;padding:9px;border:1px solid var(-
 input,select,textarea{min-width:0;max-width:100%}
 .chk{display:flex;gap:8px;align-items:center;margin-top:10px}.chk input{width:22px;height:22px}
 #form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px}#form>div{min-width:0}#form>.chk{align-self:end;margin:0 0 9px}
-#form2{grid-column:1/-1;margin-top:6px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:0 8px;align-items:end}#form2>.chk:nth-child(2){justify-self:center}#form2>.chk:nth-child(3){justify-self:end}
+#form2{grid-column:1/-1;margin-top:6px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:0 8px;align-items:end}#form2>.chk:nth-child(2){justify-self:center}#form2>.chk:nth-child(3){justify-self:end}
 .ge{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:6px}.ge>div{min-width:0}
- #form2>.chk{margin:0 0 9px}#form2 .chk{gap:6px}#form2 .chk input{flex:none}#form2 .chk label{font-size:12px!important;line-height:1.2}
+ #form2>.chk{margin:0 0 9px}#form2 .chk{flex-direction:column-reverse;gap:4px;align-items:center;text-align:center}.rd{display:flex;flex-wrap:wrap;gap:4px 10px;padding-bottom:3px}.ro{display:inline-flex;align-items:center;gap:4px;margin:0;font-size:14px;color:var(--tx)}.ro input{width:18px;height:18px;min-width:0;padding:0;margin:0;flex:none;accent-color:var(--ac)}#form2 .chk input{flex:none}#form2 .chk label{font-size:12px!important;line-height:1.2}
 .dl{padding:10px 0;border-top:1px solid var(--bd)}.dl input{min-width:0;max-width:100%;min-height:44px;-webkit-appearance:none;appearance:none;display:block}
 .g2,.fh{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:8px}.g2+.g3{margin-top:6px}.g3{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:end}.g3>div{min-width:0}.g3 input{font-size:15px;padding:9px 6px}.g2>div{min-width:0}.fh{gap:6px}.dl>button{width:100%;margin-top:8px}
  #f_urg{-webkit-appearance:none;appearance:none;flex:none;padding:0;border:2px solid var(--rd);border-radius:6px;background:var(--bg);position:relative}
@@ -91,7 +91,7 @@ const $=id=>document.getElementById(id);
  let f={coord:"",cli:"",est:"",term:"",op:"",ot:"",nota:"",urg:false,petro:"",fact:"",prio:"",guia:"",factor:false};
 let d=[{p:"",q:"",f:"",h:"",c:""}];let sentAt="";let hi=S.hist.length-1;
 const SPEC=[["coord","Coordinador Terminal 👩🏽‍💻","combo","personal"],["term","Terminal de Carga 🏭","combo","terminales"],["cli","Cliente 🏢","combo","clientes"],["est","Establecimiento 📌","dl","estab"],["nota","Emite Nota Pedido 👩🏽‍💻","combo","personal"],["petro","Coordinador PETRO 👨🏽‍💼","combo","personal"],["fact","Facturación 🧾","combo","personal"],["guia","Guía Electrónica 📋","combo","personal"]];
-const SPEC2=[["prio","Prioridad Factura ⚠️","sel","prio"],["factor","Factor 🌡️","chk"],["urg","Urgente ‼️","chk"]];
+const SPEC2=[["prio","Prioridad Factura ⚠️","rad"],["factor","Factor 🌡️","chk"],["urg","Urgente ‼️","chk"]];
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 function opts(k){const a=k==="prio"?Object.keys(PRIO):S.lists[k];return '<option value=""></option>'+a.map(x=>`<option>${esc(x)}</option>`).join("")}
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim().toLowerCase();
@@ -99,6 +99,7 @@ const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").repl
 function buildForm(){
  const fh=([k,l,t,o])=>{
   if(t==="chk")return `<div class="chk"><input type="checkbox" data-k="${k}" id="f_${k}"><label for="f_${k}" style="margin:0;font-size:15px;color:var(--tx)">${l}</label></div>`;
+    if(t==="rad")return `<div><label>${l}</label><div class="rd">${["Baja","Media","Alta"].map(v=>`<label class="ro"><input type="radio" name="${k}" data-k="${k}" value="${v}">${v}</label>`).join("")}</div></div>`;
   if(t==="sel")return `<div><label>${l}</label><select data-k="${k}">${opts(o)}</select></div>`;
   if(t==="combo"){const cur=f[k],inList=!cur||S.lists[o].some(x=>norm(x)===norm(cur));
    return `<div><label>${l}</label><select data-k="${k}" data-combo="1"><option value=""></option><option value="__new__"${inList?"":" selected"}>✏️ Escribir otro…</option>${S.lists[o].map(x=>`<option${inList&&cur&&norm(x)===norm(cur)?" selected":""}>${esc(x)}</option>`).join("")}</select><input data-new="${k}" autocomplete="off" placeholder="Escribe el nombre nuevo" value="${inList?"":esc(cur)}" style="margin-top:6px;${inList?"display:none":""}"></div>`}
@@ -113,6 +114,7 @@ function buildForm(){
    e.onchange=()=>{if(e.value==="__new__"){ni.style.display="";f[k]=ni.value;ni.focus()}else{ni.style.display="none";f[k]=e.value}upd()};
    ni.oninput=()=>{f[k]=ni.value;upd()};
    return}
+    if(e.type==="radio"){e.checked=f[k]===e.value;e.onchange=()=>{if(e.checked){f[k]=e.value;upd()}};return}
   if(e.type==="checkbox")e.checked=f[k];else e.value=f[k];
   e.oninput=e.onchange=()=>{f[k]=e.type==="checkbox"?e.checked:e.value;upd()}});
  buildDs()}
@@ -206,10 +208,11 @@ $("cy").onclick=()=>{
  lists();buildForm();upd();hist();
  if(added.length)$("sent").textContent+=" Se agregaron a Ajustes: "+added.join(", ")+".";};
 $("cp").onclick=async()=>{const t=msg();try{await navigator.clipboard.writeText(t);$("cp").textContent="✅ Copiado"}catch(e){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(_){}a.remove();$("cp").textContent="✅ Copiado"}setTimeout(()=>$("cp").textContent="📋 Copiar",1500)};
-$("nw").onclick=()=>{sentAt="";$("wl").style.display="none";$("cf").style.display="none";
+
+ $("nw").onclick=()=>{sentAt="";$("wl").style.display="none";$("cf").style.display="none";
  f={coord:"",cli:"",est:"",term:"",op:"",ot:"",nota:"",urg:false,petro:"",fact:"",prio:"",guia:"",factor:false};
  d=[{p:"",q:"",f:"",h:"",c:""}];buildForm();
- document.querySelectorAll("#form input:not([type=checkbox]),#form2 input:not([type=checkbox]),#ds input").forEach(e=>{e.value=""});
+ document.querySelectorAll("#form input:not([type=checkbox]):not([type=radio]),#ds input").forEach(e=>{e.value=""});
  document.querySelectorAll("#form select,#form2 select,#ds select").forEach(e=>{e.selectedIndex=0});
  document.querySelectorAll("#form input[type=checkbox],#form2 input[type=checkbox]").forEach(e=>{e.checked=false});
  upd();window.scrollTo(0,0)};
