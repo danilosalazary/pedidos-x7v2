@@ -29,7 +29,7 @@ input,select,textarea{min-width:0;max-width:100%}
 .rd{display:flex;flex-wrap:nowrap;justify-content:space-between;align-items:center;min-height:22px;margin-bottom:3px;gap:0 4px}.ro{display:inline-flex;align-items:center;gap:3px;margin:0;font-size:13px;color:var(--tx)}.ro input{width:16px;height:16px;min-width:0;padding:0;margin:0;flex:none;accent-color:var(--ac)}
  .ge{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:6px}.ge>div{min-width:0}
  .dl{padding:10px 0;border-top:1px solid var(--bd)}.dl input{min-width:0;max-width:100%;min-height:44px;-webkit-appearance:none;appearance:none;display:block}
-.g2,.fh{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:8px}.g2+.g3{margin-top:6px}.g3{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:end}.g3>div{min-width:0}.g3 input{font-size:15px;padding:9px 6px}.g2>div{min-width:0}.fh{gap:6px}.dl>button{width:100%;margin-top:8px}
+.g2,.fh{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:8px}.g2+.g3{margin-top:6px}.g3{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:end}.g3>div{min-width:0}.g3 input{font-size:15px;padding:9px 6px}.g2>div{min-width:0}.fh{gap:6px}.dl>button{width:auto;display:block;margin:60px 0 0 auto;padding:3px 4px;line-height:1;font-size:13px;border-radius:6px}
  #f_urg{-webkit-appearance:none;appearance:none;flex:none;padding:0;border:2px solid var(--rd);border-radius:6px;background:var(--bg);position:relative}
 #f_urg:checked{background:var(--rd)}
 #f_urg:checked::after{content:"✓";color:#fff;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
@@ -168,12 +168,12 @@ const icon=p=>p?(/INDUSTRIAL/.test(p)?"🛢️":"🛢️"):"🛢️";
  m+="\n\n🏢 Cliente :  *"+U(f.cli)+"*"+(f.est?"  📌  *"+U(f.est)+"*":"");
  const R=d.filter(r=>r.q),mu=R.length>1,mp=new Set(R.map(r=>norm(r.p))).size>1,p0=R[0]?R[0].p:"";
   m+="\n🏭 Terminal : *"+U(f.term)+"*\n\n"+(mu?"":(R[0]&&R[0].op?"📄 Orden producto : *"+R[0].op+"*\n":"")+(R[0]&&R[0].ot?"📄 Orden transporte : *"+R[0].ot+"*\n":""))+(mp?"":icon(p0)+" Producto : *"+p0+"*\n");
- R.forEach(r=>{const sp=mu?" - ":"\n";let t=(mp?icon(r.p)+" Producto : *"+r.p+"*"+sp:"")+"🔢 Cantidad : *"+num(r.q)+"* galones";
+ R.forEach((r,i)=>{const sp=mu?" - ":"\n";let t=(mp?icon(r.p)+" Producto : *"+r.p+"*"+sp:"")+"🔢 Cantidad : *"+num(r.q)+"* galones";
   if(r.f)t+=sp+"📅 Despacho : *"+fecha(r.f)+"*";
   if(r.h)t+=sp+"⏲️ Hora Entrega : *"+r.h.replace(":","h")+"* "+clock(r.h);
   if(r.c)t+=sp+"🚛 Transporte : $ *"+money(r.c)+"*";
    if(mu){if(r.op)t+=" - 📄 Orden producto : *"+r.op+"*";if(r.ot)t+=" - 📄 Orden transporte : *"+r.ot+"*"} 
-  m+=t+(mu?"\n":"")});
+    m+=(mu?kc(i+1)+" ":"")+t+(mu?"\n":"")});
  if(!mu)m+="\n";
  
  m+="\n📜 @"+f.nota+" por favor su ayuda con la emisión de la orden"+(f.urg?" de manera *PRIORITARIA*":"")+(f.factor?" una vez que @"+f.coord+" nos ayude con el factor de corrección 🌡️":"");
